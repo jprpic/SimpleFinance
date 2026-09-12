@@ -39,6 +39,13 @@ export class SavingsHistoryComponent implements OnChanges {
         return transaction.type === 'TRANSFER' ? `${from} to ${to}` : to || from || 'All envelopes';
     }
     protected transactionTypeLabel(type: SavingsTransaction['type']): string { return ({ BULK_DEPOSIT: 'Bulk deposit', TOP_UP: 'Top up', TRANSFER: 'Transfer', WITHDRAWAL: 'Withdrawal' })[type]; }
+    protected bulkAllocationSummary(transaction: SavingsTransaction): string {
+        const allocations = this.categories
+            .map((category) => ({ name: category.name, amount: transaction.categoryAmounts?.[category.id] ?? 0 }))
+            .filter((allocation) => allocation.amount > 0)
+            .map((allocation) => `${allocation.name} ${this.formatCurrency(allocation.amount)}`);
+        return allocations.join(' · ');
+    }
     protected formatCurrency(value: number): string { return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value); }
     protected formatDate(value: string): string { return new Date(value).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }); }
 }

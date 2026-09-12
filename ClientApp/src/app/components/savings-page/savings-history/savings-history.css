@@ -66,6 +66,7 @@
 }
 
 .history-main span,
+.history-main small,
 .history-amount span {
     display: block;
     margin-top: 3px;
@@ -147,4 +148,9 @@
 .page-button:disabled {
     cursor: not-allowed;
     opacity: .45;
+}
+
+.history-main small {
+    color: #25635e;
+    font-size: .72rem;
 }

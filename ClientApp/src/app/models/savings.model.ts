@@ -23,6 +23,12 @@ export const SAVINGS_CATEGORY_DEFINITIONS: readonly SavingsCategoryDefinition[] 
 
 export type SavingsAllocation = Record<SavingsCategoryId, number>;
 
+export interface SavingsAllocationVersion {
+    id: string;
+    validFrom: string;
+    allocation: SavingsAllocation;
+}
+
 export interface SavingsCategory {
     id: SavingsCategoryId;
     name: string;
@@ -42,4 +48,5 @@ export interface SavingsTransaction {
     toCategoryId?: string;
     note?: string;
     categoryAmounts?: Partial<Record<SavingsCategoryId, number>>;
+    allocationVersionId?: string;
 }

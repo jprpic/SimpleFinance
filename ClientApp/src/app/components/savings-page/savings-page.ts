@@ -57,7 +57,7 @@ export class SavingsPageComponent implements OnInit {
         this.errorMessage.set('');
         try {
             if (payload.mode === 'bulk') await this.savings.depositBulk(payload.amount, payload.note);
-            if (payload.mode === 'allocation') await this.savings.updateAllocation(payload.allocation);
+            if (payload.mode === 'allocation') await this.savings.updateAllocation(payload.allocation, payload.allocationValidFrom);
             if (payload.mode === 'top-up') await this.savings.topUpCategory(this.selectedCategory()?.id ?? '', payload.amount, payload.note);
             if (payload.mode === 'spend') await this.savings.withdrawFunds(this.selectedCategory()?.id ?? '', payload.amount, payload.note);
             if (payload.mode === 'transfer') await this.savings.transferFunds(payload.fromCategoryId, payload.toCategoryId, payload.amount, payload.note);
@@ -72,6 +72,7 @@ export class SavingsPageComponent implements OnInit {
     }
 
     protected openEditTransaction(transaction: SavingsTransaction): void {
+        if (transaction.type === 'BULK_DEPOSIT') return;
         this.transactionToEdit.set(transaction);
         this.selectedCategory.set(null);
         this.errorMessage.set('');
@@ -97,8 +98,7 @@ export class SavingsPageComponent implements OnInit {
 
     private categoryTransactionAmount(transaction: SavingsTransaction, categoryId: SavingsCategoryId): number {
         if (transaction.type === 'BULK_DEPOSIT') {
-            const category = this.savings.categories().find((item) => item.id === categoryId);
-            return transaction.amount * (category?.targetPercentage ?? 0) / 100;
+            return transaction.categoryAmounts?.[categoryId] ?? 0;
         }
         if (transaction.type === 'WITHDRAWAL') return transaction.fromCategoryId === categoryId ? -transaction.amount : 0;
         if (transaction.type === 'TOP_UP') return transaction.toCategoryId === categoryId ? transaction.amount : 0;

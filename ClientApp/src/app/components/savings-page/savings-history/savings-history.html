@@ -7,12 +7,15 @@
             <span class="history-icon" [class.negative]="transaction.type === 'WITHDRAWAL'">{{
                 transaction.type === 'WITHDRAWAL' ? '-' : '+' }}</span>
             <div class="history-main"><strong>{{ transactionLabel(transaction) }}</strong><span>{{ transaction.note ||
-                    transactionTypeLabel(transaction.type) }}</span></div>
+                    transactionTypeLabel(transaction.type) }}</span>@if (transaction.type === 'BULK_DEPOSIT')
+                {<small>Allocated: {{
+                    bulkAllocationSummary(transaction) }}</small>}</div>
             <div class="history-amount"><strong [class.negative-text]="transaction.type === 'WITHDRAWAL'">{{
                     transaction.type === 'WITHDRAWAL' ? '-' : '+' }}{{ formatCurrency(transaction.amount)
                     }}</strong><span>{{ formatDate(transaction.date) }}</span></div>
             <div class="history-actions">
-                <button type="button" (click)="editRequested.emit(transaction)">Edit</button>
+                @if (transaction.type !== 'BULK_DEPOSIT') {<button type="button"
+                    (click)="editRequested.emit(transaction)">Edit</button>}
                 <button type="button" class="delete-button"
                     (click)="deleteRequested.emit(transaction.id)">Delete</button>
             </div>

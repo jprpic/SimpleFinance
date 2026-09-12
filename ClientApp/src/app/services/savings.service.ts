@@ -1,11 +1,12 @@
 import { Injectable, computed, signal } from '@angular/core';
 import { createStore, get, set } from 'idb-keyval';
 
-import { SAVINGS_CATEGORY_DEFINITIONS, SavingsAllocation, SavingsCategory, SavingsCategoryId, SavingsTransaction } from '../models/savings.model';
+import { SAVINGS_CATEGORY_DEFINITIONS, SavingsAllocation, SavingsAllocationVersion, SavingsCategory, SavingsCategoryId, SavingsTransaction } from '../models/savings.model';
 
 const CATEGORIES_KEY = 'pwa_savings_categories';
 const TRANSACTIONS_KEY = 'pwa_savings_transactions';
 const ALLOCATION_KEY = 'pwa_savings_allocation';
+const ALLOCATION_VERSIONS_KEY = 'pwa_savings_allocation_versions';
 const savingsStore = createStore('simple-finance-savings-db', 'savings-store');
 
 const createEmptyCategories = (): SavingsCategory[] => SAVINGS_CATEGORY_DEFINITIONS.map((category) => ({ ...category, balance: 0 }));
@@ -16,7 +17,9 @@ const createDefaultAllocation = (): SavingsAllocation => Object.fromEntries(
 @Injectable({ providedIn: 'root' })
 export class SavingsService {
     readonly transactions = signal<SavingsTransaction[]>([]);
+    readonly allocationVersions = signal<SavingsAllocationVersion[]>([]);
     private readonly allocation = signal<SavingsAllocation>(createDefaultAllocation());
+    readonly activeAllocationVersion = computed(() => this.findAllocationVersion(this.todayKey(), this.allocationVersions()));
     readonly categories = computed(() => this.calculateCategories(this.transactions(), this.allocation()));
     readonly totalSaved = computed(() => this.categories().reduce((sum, category) => sum + category.balance, 0));
     private loadPromise: Promise<void> | null = null;
@@ -27,11 +30,16 @@ export class SavingsService {
                 get<SavingsCategory[]>(CATEGORIES_KEY, savingsStore),
                 get<SavingsTransaction[]>(TRANSACTIONS_KEY, savingsStore),
                 get<Partial<SavingsAllocation>>(ALLOCATION_KEY, savingsStore),
-            ]).then(async ([categories, transactions, allocation]) => {
+                get<SavingsAllocationVersion[]>(ALLOCATION_VERSIONS_KEY, savingsStore),
+            ]).then(async ([categories, transactions, allocation, storedVersions]) => {
                 const resolvedAllocation = this.resolveAllocation(allocation);
-                this.allocation.set(resolvedAllocation);
-                this.transactions.set(transactions ?? []);
-                if (!categories?.length || !allocation) await this.persist(resolvedAllocation);
+                const versions = this.resolveAllocationVersions(storedVersions, resolvedAllocation, transactions ?? []);
+                const resolvedTransactions = this.resolveTransactions(transactions ?? [], versions);
+                const transactionsChanged = resolvedTransactions.some((transaction, index) => transaction !== transactions?.[index]);
+                this.allocation.set(this.findAllocationVersion(this.todayKey(), versions).allocation);
+                this.allocationVersions.set(versions);
+                this.transactions.set(resolvedTransactions);
+                if (!categories?.length || !allocation || !storedVersions?.length || transactionsChanged) await this.persist(resolvedAllocation, versions);
             }).catch(() => {
                 this.allocation.set(createDefaultAllocation());
                 this.transactions.set([]);
@@ -47,9 +55,11 @@ export class SavingsService {
             throw new Error('Savings categories are not loaded.');
         }
 
+        const allocationVersion = this.activeAllocationVersion();
         const transaction: SavingsTransaction = {
             id: crypto.randomUUID(), date: new Date().toISOString(), type: 'BULK_DEPOSIT', amount, note,
-            categoryAmounts: Object.fromEntries(this.categories().map((category) => [category.id, amount * category.targetPercentage / 100])),
+            allocationVersionId: allocationVersion.id,
+            categoryAmounts: Object.fromEntries(this.categories().map((category) => [category.id, amount * allocationVersion.allocation[category.id] / 100])),
         };
         await this.commitTransactions([transaction, ...this.transactions()]);
     }
@@ -96,6 +106,7 @@ export class SavingsService {
         this.assertPositiveAmount(changes.amount);
         const existing = this.transactions().find((transaction) => transaction.id === id);
         if (!existing) throw new Error('Savings transaction not found.');
+        if (existing.type === 'BULK_DEPOSIT') throw new Error('Bulk deposits cannot be edited. Add a separate transaction to correct the balance.');
         if (existing.type === 'TRANSFER' && changes.fromCategoryId === changes.toCategoryId) {
             throw new Error('Choose two different envelopes.');
         }
@@ -110,13 +121,20 @@ export class SavingsService {
         await this.commitTransactions(nextTransactions);
     }
 
-    async updateAllocation(allocation: SavingsAllocation): Promise<void> {
+    async updateAllocation(allocation: SavingsAllocation, validFrom = this.todayKey()): Promise<void> {
         await this.load();
         this.assertValidAllocation(allocation);
-        this.allocation.set(allocation);
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(validFrom)) throw new Error('Choose a valid start date for the allocation.');
+        const nextVersion: SavingsAllocationVersion = { id: crypto.randomUUID(), validFrom, allocation: { ...allocation } };
+        const versions = [...this.allocationVersions().filter((version) => version.validFrom !== validFrom), nextVersion]
+            .sort((left, right) => left.validFrom.localeCompare(right.validFrom));
+        const activeAllocation = this.findAllocationVersion(this.todayKey(), versions).allocation;
+        this.allocation.set(activeAllocation);
+        this.allocationVersions.set(versions);
         await Promise.all([
             set(CATEGORIES_KEY, this.categories(), savingsStore),
-            set(ALLOCATION_KEY, allocation, savingsStore),
+            set(ALLOCATION_KEY, activeAllocation, savingsStore),
+            set(ALLOCATION_VERSIONS_KEY, versions, savingsStore),
         ]);
     }
 
@@ -129,10 +147,11 @@ export class SavingsService {
         this.transactions.set(transactions);
     }
 
-    private async persist(allocation: SavingsAllocation): Promise<void> {
+    private async persist(allocation: SavingsAllocation, versions: SavingsAllocationVersion[]): Promise<void> {
         await set(CATEGORIES_KEY, this.categories(), savingsStore);
         await set(TRANSACTIONS_KEY, this.transactions(), savingsStore);
         await set(ALLOCATION_KEY, allocation, savingsStore);
+        await set(ALLOCATION_VERSIONS_KEY, versions, savingsStore);
     }
 
     private calculateCategories(transactions: SavingsTransaction[], allocation: SavingsAllocation): SavingsCategory[] {
@@ -145,7 +164,7 @@ export class SavingsService {
 
     private transactionAmountForCategory(transaction: SavingsTransaction, categoryId: SavingsCategoryId, allocation: SavingsAllocation): number {
         if (transaction.type === 'BULK_DEPOSIT') {
-            return transaction.categoryAmounts?.[categoryId] ?? transaction.amount * allocation[categoryId] / 100;
+            return transaction.categoryAmounts?.[categoryId] ?? 0;
         }
         if (transaction.type === 'WITHDRAWAL') return transaction.fromCategoryId === categoryId ? -transaction.amount : 0;
         if (transaction.type === 'TOP_UP') return transaction.toCategoryId === categoryId ? transaction.amount : 0;
@@ -160,6 +179,40 @@ export class SavingsService {
             allocation[category.id] = stored?.[category.id] ?? defaults[category.id];
             return allocation;
         }, {} as SavingsAllocation);
+    }
+
+    private resolveAllocationVersions(stored: SavingsAllocationVersion[] | undefined, allocation: SavingsAllocation, transactions: SavingsTransaction[]): SavingsAllocationVersion[] {
+        if (stored?.length) return stored.map((version) => ({ ...version, allocation: { ...version.allocation } })).sort((left, right) => left.validFrom.localeCompare(right.validFrom));
+        const firstTransactionDate = transactions.map((transaction) => this.dateKey(transaction.date)).sort()[0] ?? this.todayKey();
+        return [{ id: crypto.randomUUID(), validFrom: firstTransactionDate, allocation: { ...allocation } }];
+    }
+
+    private resolveTransactions(transactions: SavingsTransaction[], versions: SavingsAllocationVersion[]): SavingsTransaction[] {
+        return transactions.map((transaction) => {
+            if (transaction.type !== 'BULK_DEPOSIT') return transaction;
+            const version = transaction.allocationVersionId
+                ? versions.find((item) => item.id === transaction.allocationVersionId) ?? this.findAllocationVersion(this.dateKey(transaction.date), versions)
+                : this.findAllocationVersion(this.dateKey(transaction.date), versions);
+            const categoryAmounts = Object.fromEntries(SAVINGS_CATEGORY_DEFINITIONS.map((category) => [
+                category.id,
+                transaction.categoryAmounts?.[category.id] ?? transaction.amount * version.allocation[category.id] / 100,
+            ]));
+            if (transaction.allocationVersionId === version.id && SAVINGS_CATEGORY_DEFINITIONS.every((category) => transaction.categoryAmounts?.[category.id] !== undefined)) return transaction;
+            return { ...transaction, allocationVersionId: version.id, categoryAmounts };
+        });
+    }
+
+    private findAllocationVersion(date: string, versions: SavingsAllocationVersion[]): SavingsAllocationVersion {
+        return [...versions].reverse().find((version) => version.validFrom <= date) ?? versions[0] ?? { id: 'default', validFrom: date, allocation: createDefaultAllocation() };
+    }
+
+    private todayKey(): string {
+        const today = new Date();
+        return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    }
+    private dateKey(value: string): string {
+        const date = new Date(value);
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
     }
 
     private assertValidAllocation(allocation: SavingsAllocation): void {

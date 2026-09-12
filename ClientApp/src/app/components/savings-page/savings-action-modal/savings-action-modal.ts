@@ -11,6 +11,7 @@ export interface SavingsActionPayload {
     fromCategoryId: string;
     toCategoryId: string;
     allocation: SavingsAllocation;
+    allocationValidFrom: string;
     transactionId?: string;
 }
 
@@ -36,9 +37,11 @@ export class SavingsActionModalComponent implements OnChanges {
     protected fromCategoryIdValue = '';
     protected toCategoryIdValue = '';
     protected allocationDraft: SavingsAllocation = {} as SavingsAllocation;
+    protected allocationValidFromValue = '';
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['allocation']) this.allocationDraft = { ...this.allocation };
+        if (changes['mode'] && this.mode === 'allocation') this.allocationValidFromValue = this.localDateKey(new Date());
         if (changes['transactionToEdit'] && this.transactionToEdit) {
             this.amountValue = this.transactionToEdit.amount;
             this.noteValue = this.transactionToEdit.note ?? '';
@@ -58,5 +61,6 @@ export class SavingsActionModalComponent implements OnChanges {
     protected allocationTotal(): number { return Object.values(this.allocationDraft).reduce((total, value) => total + Number(value || 0), 0); }
     protected setAllocation(categoryId: SavingsCategoryId, value: number | string): void { this.allocationDraft = { ...this.allocationDraft, [categoryId]: Number(value) }; }
     protected formatCurrency(value: number): string { return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value); }
-    protected submit(): void { this.submitted.emit({ mode: this.mode!, amount: Number(this.amountValue), note: this.noteValue, fromCategoryId: this.fromCategoryIdValue, toCategoryId: this.toCategoryIdValue, allocation: this.allocationDraft, transactionId: this.transactionToEdit?.id }); }
+    private localDateKey(date: Date): string { return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`; }
+    protected submit(): void { this.submitted.emit({ mode: this.mode!, amount: Number(this.amountValue), note: this.noteValue, fromCategoryId: this.fromCategoryIdValue, toCategoryId: this.toCategoryIdValue, allocation: this.allocationDraft, allocationValidFrom: this.allocationValidFromValue, transactionId: this.transactionToEdit?.id }); }
 }

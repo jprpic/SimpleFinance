@@ -6,7 +6,9 @@
         <p class="eyebrow">Savings action</p>
         <h3 id="savings-modal-title">{{ modalTitle() }}</h3>
         @if (mode === 'allocation') {
-        <p class="modal-help">Choose how every bulk deposit is distributed. The total must equal 100%.</p>
+        <p class="modal-help">Choose how bulk deposits are distributed from this date onward. The total must equal 100%.
+        </p>
+        <label>Valid from<input type="date" [(ngModel)]="allocationValidFromValue" /></label>
         <div class="allocation-editor">@for (category of categories; track category.id) {<label>{{ category.name }}<div
                     class="percentage-input"><input type="number" min="0" max="100" step="1"
                         [ngModel]="allocationDraft[category.id]"
