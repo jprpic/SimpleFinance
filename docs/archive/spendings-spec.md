@@ -27,23 +27,43 @@ export interface Spending {
 }
 
 export enum Category {
-  HOUSING = 'Housing',
-  FOOD = 'Food & Groceries',
-  TRANSPORT = 'Transportation',
-  UTILITIES = 'Utilities',
-  ENTERTAINMENT = 'Entertainment',
-  HEALTH = 'Health & Personal Care',
-  MISC = 'Miscellaneous'
+  HOUSING = 'Housing & Home',
+  FOOD = 'Food & Dining',
+  CAR = 'Car',
+  UTILITIES = 'Bills & Utilities',
+  LIFE_EVENTS = 'Vacations & Trips',
+  LIFESTYLE = 'Entertainment & Personal',
+  OBLIGATIONS = 'Gifts & Shared'
 }
 
 export const SUBCATEGORIES_MAP: Record<Category, string[]> = {
-  [Category.HOUSING]: ['Rent', 'Mortgage', 'Maintenance', 'Furnishings'],
-  [Category.FOOD]: ['Groceries', 'Restaurants', 'Coffee', 'Delivery'],
-  [Category.TRANSPORT]: ['Fuel', 'Public Transit', 'Taxi/Rideshare', 'Parking', 'Car Service'],
-  [Category.UTILITIES]: ['Electricity', 'Water', 'Internet', 'Mobile Plan'],
-  [Category.ENTERTAINMENT]: ['Subscriptions', 'Movies/Events', 'Hobbies', 'Gaming'],
-  [Category.HEALTH]: ['Pharmacy', 'Doctor', 'Gym/Fitness', 'Insurance'],
-  [Category.MISC]: ['General', 'Gifts', 'Services']
+  [Category.HOUSING]: [
+    'Rent',
+    'Appliances & Electronics',
+    'Home Maintenance',
+    'Furnishings & Decor'
+  ],
+  [Category.FOOD]: ['Groceries', 'Restaurants & Dining Out', 'Food Delivery'],
+  [Category.CAR]: [
+    'Fuel',
+    'Car Maintenance & Repairs',
+    'Parking & Tolls',
+    'Car Insurance & Registration'
+  ],
+  [Category.UTILITIES]: [
+    'Electricity',
+    'Water & Heating',
+    'Internet & Mobile Plans',
+    'Subscriptions & Streaming'
+  ],
+  [Category.LIFE_EVENTS]: [
+    'Annual Seaside Vacation',
+    'Weekend Trips & Getaways',
+    'Concerts & Events',
+    'Wedding Planning'
+  ],
+  [Category.LIFESTYLE]: ['Personal Care', 'Clothes & Shoes', 'Hobbies & Tech', 'Misc Personal'],
+  [Category.OBLIGATIONS]: ['Gifts (Fiancée)', 'Gifts (Family & Friends)', 'Celebrations & Weddings']
 };
 
 ---
@@ -61,14 +81,15 @@ export const SUBCATEGORIES_MAP: Record<Category, string[]> = {
 ## 3. UI & Component Architecture
 
 ### Cleanup Existing Code
-- Clear default HTML boilerplate from app.component.html.
-- Remove default boilerplate tests or demo logic in app.component.ts.
+- Clear default HTML boilerplate from src/app/app.html.
+- Remove default boilerplate tests or demo logic in src/app/app.ts.
 
 ### AppComponent / Main View Layout
-- Header: Title + "Quick Add +" Button.
-- Main Section: 
+- Root shell: Global header and router outlet only.
+- Spending page: Title + "Quick Add +" Button.
+- Main Section:
   - List of Spending cards/rows ordered by createdAt descending.
-  - Display: Amount + Currency, Category, Subcategory, Date.
+  - Display: Amount followed by the fixed `EUR` label, Category, Subcategory, Date.
   - Action: "Delete" icon/button per row.
   - Empty state text when list is empty ("No spendings recorded yet.").
 - Modal / Quick-Add Overlay:
@@ -77,6 +98,7 @@ export const SUBCATEGORIES_MAP: Record<Category, string[]> = {
     - Amount (number input, min 0.01)
     - Category (dropdown populated by Category enum)
     - Subcategory (dropdown dynamically populated based on selected Category)
+  - Currency is not a form field or stored property. This personal app uses EUR exclusively, so the list renders `EUR` next to every amount.
   - Actions: Save (submits form, adds to storage, closes modal) and Cancel (closes modal).
 
 ---
