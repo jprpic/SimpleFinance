@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 
-import { AnalyticsComponent } from './components/analytics/analytics';
 import { SpendingPageComponent } from './components/spending-page/spending-page';
+import { SavingsPageComponent } from './components/savings-page/savings-page';
 
 export const routes: Routes = [
     {
@@ -9,8 +9,8 @@ export const routes: Routes = [
         component: SpendingPageComponent,
     },
     {
-        path: 'analytics',
-        component: AnalyticsComponent,
+        path: 'savings',
+        component: SavingsPageComponent,
     },
     {
         path: '',
