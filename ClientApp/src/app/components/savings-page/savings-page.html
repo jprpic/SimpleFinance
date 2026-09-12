@@ -1,0 +1,25 @@
+<section class="page-shell">
+    <div class="page-header">
+        <div>
+            <p class="eyebrow">Planning</p>
+            <h2>Savings envelopes</h2>
+            <p class="subtitle">Give every goal a place to grow.</p>
+        </div>
+        <div class="action-bar"><button type="button" class="button button-dark" (click)="openBulkDeposit()">+ Bulk
+                deposit</button><button type="button" class="button button-light"
+                (click)="openAllocationSettings()">Allocation</button><button type="button" class="button button-light"
+                (click)="openTransfer()">Transfer</button></div>
+    </div>
+    <app-savings-hero [total]="savings.totalSaved()"></app-savings-hero>
+    <div class="section-heading">
+        <h3>Envelopes</h3><span>{{ savings.categories().length }} goals · {{ allocationTotal() }}% allocated</span>
+    </div>
+    <div class="category-grid">@for (category of savings.categories(); track category.id) {<app-savings-category-card
+            [category]="category" (actionRequested)="openAmountAction(category, $event)"></app-savings-category-card>}
+    </div>
+    <app-savings-history [transactions]="savings.transactions()"
+        [categories]="savings.categories()"></app-savings-history>
+    @if (modal() !== null) {<app-savings-action-modal [mode]="modal()" [categories]="savings.categories()"
+        [selectedCategory]="selectedCategory()" [allocation]="allocationDraft()" [errorMessage]="errorMessage()"
+        (closed)="closeModal()" (submitted)="submitAction($event)"></app-savings-action-modal>}
+</section>

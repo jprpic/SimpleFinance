@@ -1,0 +1,92 @@
+:host {
+    display: block;
+}
+
+.history-section {
+    margin-top: 32px;
+}
+
+.section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.section-heading h3 {
+    margin: 0;
+    font-size: 1.15rem;
+}
+
+.section-heading span {
+    color: #7a8791;
+    font-size: .82rem;
+}
+
+.history-list {
+    overflow: hidden;
+    border: 1px solid #e1e8ea;
+    border-radius: 16px;
+    background: #fff;
+}
+
+.history-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 15px 17px;
+    border-bottom: 1px solid #edf1f2;
+}
+
+.history-item:last-child {
+    border-bottom: 0;
+}
+
+.history-icon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #e5f2ed;
+    color: #166534;
+    font-weight: 800;
+}
+
+.history-icon.negative {
+    background: #f5e9e5;
+    color: #9f3d25;
+}
+
+.history-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.history-main span,
+.history-amount span {
+    display: block;
+    margin-top: 3px;
+    color: #7a8791;
+    font-size: .78rem;
+}
+
+.history-amount {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.negative-text {
+    color: #b5472e;
+}
+
+.empty-state {
+    padding: 28px;
+    border: 1px dashed #cbd5d8;
+    border-radius: 16px;
+    text-align: center;
+    color: #7a8791;
+}

@@ -1,0 +1,15 @@
+<section class="history-section">
+    <div class="section-heading">
+        <h3>Recent activity</h3><span>{{ transactions.length }} transactions</span>
+    </div>
+    @if (transactions.length === 0) { <div class="empty-state">Your savings activity will appear here.</div> } @else {
+    <div class="history-list">@for (transaction of transactions.slice(0, 12); track transaction.id) {<div
+            class="history-item"><span class="history-icon" [class.negative]="transaction.type === 'WITHDRAWAL'">{{
+                transaction.type === 'WITHDRAWAL' ? '-' : '+' }}</span>
+            <div class="history-main"><strong>{{ transactionLabel(transaction) }}</strong><span>{{ transaction.note ||
+                    transactionTypeLabel(transaction.type) }}</span></div>
+            <div class="history-amount"><strong [class.negative-text]="transaction.type === 'WITHDRAWAL'">{{
+                    transaction.type === 'WITHDRAWAL' ? '-' : '+' }}{{ formatCurrency(transaction.amount)
+                    }}</strong><span>{{ formatDate(transaction.date) }}</span></div>
+        </div>}</div> }
+</section>

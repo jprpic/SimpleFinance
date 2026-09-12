@@ -1,0 +1,38 @@
+:host {
+    display: block;
+}
+
+.hero-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 26px 0 30px;
+    padding: 28px;
+    border-radius: 20px;
+    background: linear-gradient(120deg, #173b3f, #23605d);
+    color: #fff;
+    box-shadow: 0 16px 30px #173b3f33;
+}
+
+.hero-label {
+    display: block;
+    margin-bottom: 8px;
+    color: #b8d6d1;
+    font-size: .85rem;
+}
+
+.hero-card strong {
+    font-size: clamp(2.2rem, 8vw, 3.5rem);
+    letter-spacing: -.05em;
+}
+
+.hero-mark {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    border: 1px solid #ffffff4d;
+    border-radius: 50%;
+    color: #d9ee9e;
+    font-size: 2rem;
+}
