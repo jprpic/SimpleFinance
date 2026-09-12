@@ -65,6 +65,15 @@
     min-width: 0;
 }
 
+.history-main strong {
+    display: block;
+    overflow: hidden;
+    font-size: .9rem;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .history-main span,
 .history-main small,
 .history-amount span {
@@ -72,6 +81,12 @@
     margin-top: 3px;
     color: #7a8791;
     font-size: .78rem;
+}
+
+.history-meta {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .history-amount {
@@ -153,4 +168,26 @@
 .history-main small {
     color: #25635e;
     font-size: .72rem;
+}
+
+.history-allocation {
+    font-weight: 700;
+}
+
+@media (max-width: 640px) {
+    .history-item {
+        display: grid;
+        grid-template-columns: 32px minmax(0, 1fr) auto;
+        gap: 10px;
+        padding: 13px 14px;
+    }
+
+    .history-amount {
+        align-self: start;
+    }
+
+    .history-actions {
+        grid-column: 2 / -1;
+        justify-content: flex-start;
+    }
 }

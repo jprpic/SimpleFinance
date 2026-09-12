@@ -6,9 +6,17 @@
             <p class="subtitle">Give every goal a place to grow.</p>
         </div>
         <div class="action-bar"><button type="button" class="button button-dark" (click)="openBulkDeposit()">+ Bulk
-                deposit</button><button type="button" class="button button-light"
-                (click)="openAllocationSettings()">Allocation</button><button type="button" class="button button-light"
-                (click)="openTransfer()">Transfer</button></div>
+                deposit</button>
+            <div class="secondary-actions"><button type="button" class="button button-light"
+                    (click)="openAllocationSettings()">Allocation</button><button type="button"
+                    class="button button-light" (click)="openTransfer()">Transfer</button></div>
+            <details #moreActions class="more-actions" (click)="$event.stopPropagation()">
+                <summary class="button button-light">More</summary>
+                <div class="more-actions-menu"><button type="button"
+                        (click)="openAllocationSettings()">Allocation</button><button type="button"
+                        (click)="openTransfer()">Transfer</button></div>
+            </details>
+        </div>
     </div>
     <app-savings-hero [total]="displayedTotal()"></app-savings-hero>
     <div class="section-heading">

@@ -41,6 +41,54 @@ h2 {
     justify-content: flex-end;
 }
 
+.secondary-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.more-actions {
+    display: none;
+    position: relative;
+}
+
+.more-actions summary {
+    list-style: none;
+}
+
+.more-actions summary::-webkit-details-marker {
+    display: none;
+}
+
+.more-actions-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 2;
+    display: grid;
+    min-width: 140px;
+    padding: 6px;
+    border: 1px solid #e1e8ea;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 12px 24px #17202b1f;
+}
+
+.more-actions-menu button {
+    padding: .7rem .75rem;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #17202b;
+    text-align: left;
+    font: inherit;
+    font-size: .82rem;
+    font-weight: 700;
+}
+
+.more-actions-menu button:hover {
+    background: #f1f5f5;
+}
+
 .button {
     padding: .8rem 1rem;
     border: 0;
@@ -93,6 +141,14 @@ app-savings-filters {
 
     .action-bar {
         justify-content: flex-start;
+    }
+
+    .secondary-actions {
+        display: none;
+    }
+
+    .more-actions {
+        display: block;
     }
 
     .category-grid {

@@ -6,9 +6,10 @@
     <div class="history-list">@for (transaction of pagedTransactions; track transaction.id) {<div class="history-item">
             <span class="history-icon" [class.negative]="transaction.type === 'WITHDRAWAL'">{{
                 transaction.type === 'WITHDRAWAL' ? '-' : '+' }}</span>
-            <div class="history-main"><strong>{{ transactionLabel(transaction) }}</strong><span>{{ transaction.note ||
+            <div class="history-main"><strong>{{ transactionLabel(transaction) }}</strong><span class="history-meta">{{
+                    transaction.note ||
                     transactionTypeLabel(transaction.type) }}</span>@if (transaction.type === 'BULK_DEPOSIT')
-                {<small>Allocated: {{
+                {<small class="history-allocation">Allocated: {{
                     bulkAllocationSummary(transaction) }}</small>}</div>
             <div class="history-amount"><strong [class.negative-text]="transaction.type === 'WITHDRAWAL'">{{
                     transaction.type === 'WITHDRAWAL' ? '-' : '+' }}{{ formatCurrency(transaction.amount)

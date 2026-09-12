@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
 
 import { SAVINGS_CATEGORY_DEFINITIONS, SavingsAllocation, SavingsCategory, SavingsCategoryId, SavingsTransaction } from '../../models/savings.model';
 import { SavingsService } from '../../services/savings.service';
@@ -17,6 +17,7 @@ import { SavingsHistoryComponent } from './savings-history/savings-history';
 })
 export class SavingsPageComponent implements OnInit {
     protected readonly savings = inject(SavingsService);
+    @ViewChild('moreActions') private moreActions?: ElementRef<HTMLDetailsElement>;
     protected readonly filters = signal<SavingsFilters>({ year: null, month: null, category: null });
     protected readonly modal = signal<SavingsModalMode | null>(null);
     protected readonly selectedCategory = signal<SavingsCategory | null>(null);
@@ -45,6 +46,8 @@ export class SavingsPageComponent implements OnInit {
     });
 
     async ngOnInit(): Promise<void> { await this.savings.load(); }
+    @HostListener('document:click')
+    protected closeMoreActions(): void { if (this.moreActions) this.moreActions.nativeElement.open = false; }
     protected allocationTotal(): number { return this.savings.categories().reduce((total, category) => total + category.targetPercentage, 0); }
     protected updateFilters(filters: SavingsFilters): void { this.filters.set(filters); }
     protected openBulkDeposit(): void { this.openAction('bulk'); }
