@@ -1,0 +1,49 @@
+<section class="filters-panel" aria-labelledby="filters-title">
+    <div class="filters-heading">
+        <h3 id="filters-title">Filter spendings</h3>
+        <span>Optional</span>
+    </div>
+
+    <div class="filters-grid">
+        <label>
+            <span>Year</span>
+            <select #year (change)="updateFilters(year.value, month.value, category.value, subcategory.value)">
+                <option value="">Any year</option>
+                @for (filterYear of years; track filterYear) {
+                <option [value]="filterYear">{{ filterYear }}</option>
+                }
+            </select>
+        </label>
+
+        <label>
+            <span>Month</span>
+            <select #month (change)="updateFilters(year.value, month.value, category.value, subcategory.value)">
+                <option value="">Any month</option>
+                @for (filterMonth of months; track $index) {
+                <option [value]="$index">{{ filterMonth }}</option>
+                }
+            </select>
+        </label>
+
+        <label>
+            <span>Category</span>
+            <select #category (change)="updateCategory(year.value, month.value, category.value)">
+                <option value="">Any category</option>
+                @for (filterCategory of categories; track filterCategory) {
+                <option [value]="filterCategory">{{ filterCategory }}</option>
+                }
+            </select>
+        </label>
+
+        <label>
+            <span>Subcategory</span>
+            <select #subcategory [disabled]="!category.value"
+                (change)="updateFilters(year.value, month.value, category.value, subcategory.value)">
+                <option value="">Any subcategory</option>
+                @for (filterSubcategory of getSubcategories(category.value); track filterSubcategory) {
+                <option [value]="filterSubcategory">{{ filterSubcategory }}</option>
+                }
+            </select>
+        </label>
+    </div>
+</section>
