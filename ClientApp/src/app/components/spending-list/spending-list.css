@@ -1,0 +1,88 @@
+.content-panel {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
+    padding: 18px;
+}
+
+.empty-state {
+    padding: 40px 18px;
+    text-align: center;
+    color: #6b7280;
+    font-size: 1rem;
+}
+
+.spendings-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.spending-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 16px;
+    border: 1px solid #edf2f7;
+    border-radius: 14px;
+    background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
+}
+
+.amount-line {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.amount-line strong {
+    font-size: 1.6rem;
+    letter-spacing: -0.04em;
+}
+
+.amount-line span,
+.meta-line,
+.date {
+    color: #4b5563;
+}
+
+.meta-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.spending-side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.delete-button {
+    background: #fee2e2;
+    color: #b91c1c;
+    padding: 0.55rem 0.8rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+@media (max-width: 640px) {
+    .spending-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .spending-side {
+        width: 100%;
+        align-items: flex-start;
+    }
+}

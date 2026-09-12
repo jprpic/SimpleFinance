@@ -1,0 +1,30 @@
+<section class="content-panel">
+    @if (spendings.length === 0) {
+    <div class="empty-state">No spendings recorded yet.</div>
+    } @else {
+    <ul class="spendings-list">
+        @for (spending of spendings; track spending.id) {
+        <li class="spending-item">
+            <div class="spending-main">
+                <div class="amount-line">
+                    <strong>{{ spending.amount | number: '1.2-2' }}</strong>
+                    <span>EUR</span>
+                </div>
+                <div class="meta-line">
+                    <span>{{ spending.category }}</span>
+                    <span>•</span>
+                    <span>{{ spending.subcategory }}</span>
+                </div>
+            </div>
+
+            <div class="spending-side">
+                <span class="date">{{ formatDate(spending.createdAt) }}</span>
+                <button type="button" class="delete-button" (click)="onDelete(spending.id)">
+                    Delete
+                </button>
+            </div>
+        </li>
+        }
+    </ul>
+    }
+</section>

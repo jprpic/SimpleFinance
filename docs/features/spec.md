@@ -21,7 +21,6 @@ Create src/app/models/spending.model.ts:
 export interface Spending {
   id: string;
   amount: number;
-  currency: string; // e.g., 'USD', 'EUR'
   category: Category;
   subcategory: string;
   createdAt: string; // ISO String
@@ -76,7 +75,6 @@ export const SUBCATEGORIES_MAP: Record<Category, string[]> = {
   - Hidden by default; toggled by "Quick Add +" button or Backdrop click.
   - Inputs:
     - Amount (number input, min 0.01)
-    - Currency (dropdown or text input with default preference, e.g., 'EUR' or 'USD')
     - Category (dropdown populated by Category enum)
     - Subcategory (dropdown dynamically populated based on selected Category)
   - Actions: Save (submits form, adds to storage, closes modal) and Cancel (closes modal).

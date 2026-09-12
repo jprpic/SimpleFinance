@@ -1,0 +1,3 @@
+- Never place inline form logic or list renderings inside `app.component.html`.
+- Always break UI features into standalone presentation components inside `src/app/components/`.
+- `app.component.html` must only hold global layout elements (header, footer, router-outlet).
