@@ -84,10 +84,7 @@ export class SavingsService {
     async withdrawFunds(categoryId: string, amount: number, note?: string): Promise<void> {
         await this.load();
         this.assertPositiveAmount(amount);
-        const category = this.findCategory(categoryId);
-        if (category.balance < amount) {
-            throw new Error(`Not enough funds in ${category.name}.`);
-        }
+        this.findCategory(categoryId);
         const transaction: SavingsTransaction = {
             id: crypto.randomUUID(), date: new Date().toISOString(), type: 'WITHDRAWAL', amount, fromCategoryId: categoryId, note,
         };
@@ -103,7 +100,6 @@ export class SavingsService {
             throw new Error('Choose two different envelopes.');
         }
         const updated = this.transactions().map((transaction) => transaction.id === id ? { ...transaction, ...changes } : transaction);
-        this.assertValidProjection(updated);
         await this.commitTransactions(updated);
     }
 
@@ -111,7 +107,6 @@ export class SavingsService {
         await this.load();
         const nextTransactions = this.transactions().filter((transaction) => transaction.id !== id);
         if (nextTransactions.length === this.transactions().length) throw new Error('Savings transaction not found.');
-        this.assertValidProjection(nextTransactions);
         await this.commitTransactions(nextTransactions);
     }
 
@@ -126,7 +121,6 @@ export class SavingsService {
     }
 
     private async commitTransactions(transactions: SavingsTransaction[]): Promise<void> {
-        this.assertValidProjection(transactions);
         const nextCategories = this.calculateCategories(transactions, this.allocation());
         await Promise.all([
             set(CATEGORIES_KEY, nextCategories, savingsStore),
@@ -158,12 +152,6 @@ export class SavingsService {
         if (transaction.fromCategoryId === categoryId) return -transaction.amount;
         if (transaction.toCategoryId === categoryId) return transaction.amount;
         return 0;
-    }
-
-    private assertValidProjection(transactions: SavingsTransaction[]): void {
-        if (this.calculateCategories(transactions, this.allocation()).some((category) => category.balance < -0.001)) {
-            throw new Error('This change would make an envelope balance negative.');
-        }
     }
 
     private resolveAllocation(stored: Partial<SavingsAllocation> | undefined): SavingsAllocation {

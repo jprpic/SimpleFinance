@@ -42,6 +42,10 @@
     letter-spacing: -.03em;
 }
 
+.negative-balance {
+    color: #b5472e;
+}
+
 .allocation-track {
     height: 5px;
     margin: 15px 0;

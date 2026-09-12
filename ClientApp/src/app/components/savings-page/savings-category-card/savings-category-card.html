@@ -1,10 +1,11 @@
 <article class="category-card" [style.--accent]="category.color">
-    <div class="category-topline"><span class="category-dot"></span><span class="percentage">{{
-            category.targetPercentage }}%</span></div>
-    <h3>{{ category.name }}</h3>
-    <strong class="category-balance">{{ formatCurrency(category.balance) }}</strong>
-    <div class="allocation-track"><span [style.width.%]="category.targetPercentage"></span></div>
-    <div class="category-actions"><button type="button" class="small-button top-up"
-            (click)="actionRequested.emit('top-up')">+ Top up</button><button type="button" class="small-button spend"
-            (click)="actionRequested.emit('spend')">- Spend</button></div>
+        <div class="category-topline"><span class="category-dot"></span><span class="percentage">{{
+                        category.targetPercentage }}%</span></div>
+        <h3>{{ category.name }}</h3>
+        <strong class="category-balance" [class.negative-balance]="category.balance < 0">{{
+                formatCurrency(category.balance) }}</strong>
+        <div class="allocation-track"><span [style.width.%]="category.targetPercentage"></span></div>
+        <div class="category-actions"><button type="button" class="small-button top-up"
+                        (click)="actionRequested.emit('top-up')">+ Top up</button><button type="button"
+                        class="small-button spend" (click)="actionRequested.emit('spend')">- Spend</button></div>
 </article>

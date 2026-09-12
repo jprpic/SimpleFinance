@@ -107,6 +107,6 @@ Executing a Bulk Deposit of 1,000 updates balances to: Loan 200, Car 150, Trips 
 
 Transferring 100 from Wedding to Trips updates individual balances while keeping totalSaved unchanged.
 
-Withdrawing 50 from Car updates Car balance and decreases totalSaved by 50 without creating a record in daily spendings.
+Withdrawing 50 from Car updates Car balance and decreases totalSaved by 50 without creating a record in daily spendings. Withdrawals may exceed the current envelope balance, allowing the envelope and totalSaved to become negative until covered by future deposits or transfers.
 
 All updates instantly persist to IndexedDB via idb-keyval.
