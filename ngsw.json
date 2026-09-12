@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1789236134703,
+  "timestamp": 1789236556810,
   "index": "https://jprpic.github.io/SimpleFinance/index.html",
   "assetGroups": [
     {
@@ -52,7 +52,7 @@
     "https://jprpic.github.io/SimpleFinance/icons/icon-96x96.png": "7fb8f59c30ce2ff12c700321a0b39e14b3dc8f95",
     "https://jprpic.github.io/SimpleFinance/index.html": "89ddd38eb934ddeccfabc09630eabe6a2b882f78",
     "https://jprpic.github.io/SimpleFinance/main-RCZQV56W.js": "992169d93a7f1c4927e1eff440d67bede34e0952",
-    "https://jprpic.github.io/SimpleFinance/manifest.webmanifest": "77dd1b817ad245568c4731d22a12e78b4d58b604",
+    "https://jprpic.github.io/SimpleFinance/manifest.webmanifest": "606fde057d664eaf15c676f03bc800b81ed68098",
     "https://jprpic.github.io/SimpleFinance/styles-SP7SBEJ2.css": "49798b47b8ba8fef1e3694ff4d5cb55dcec30483"
   },
   "navigationUrls": [
