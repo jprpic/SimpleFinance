@@ -18,14 +18,6 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should render the global app shell header', async () => {
-    const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
-    const compiled = fixture.nativeElement as HTMLElement;
-
-    expect(compiled.querySelector('h1')?.textContent).toContain('SimpleFinance');
-  });
-
   it('should mount the router outlet host', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();

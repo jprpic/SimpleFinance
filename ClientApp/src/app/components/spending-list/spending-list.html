@@ -14,11 +14,12 @@
                     <span>{{ spending.category }}</span>
                     <span>•</span>
                     <span>{{ spending.subcategory }}</span>
+                    <span>•</span>
+                    <time class="date" [attr.datetime]="spending.createdAt">{{ formatDate(spending.createdAt) }}</time>
                 </div>
             </div>
 
             <div class="spending-side">
-                <span class="date">{{ formatDate(spending.createdAt) }}</span>
                 <div class="item-actions">
                     <button type="button" class="edit-button" (click)="onEdit(spending)">Edit</button>
                     <button type="button" class="delete-button" (click)="onDelete(spending.id)">Delete</button>

@@ -1,15 +1,14 @@
 .filters-panel {
     margin-bottom: 20px;
     padding: 18px;
-    border: 1px solid #e5e7eb;
-    border-radius: 18px;
-    background: #fff;
-    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
+    border: 1px solid #e1e8ea;
+    border-radius: 16px;
+    background: #f8faf9;
 }
 
 .filters-heading {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
     gap: 12px;
     margin-bottom: 14px;
@@ -21,32 +20,32 @@
 }
 
 .filters-heading span {
-    color: #6b7280;
-    font-size: 0.8rem;
+    color: #7a8791;
+    font-size: .78rem;
 }
 
 .filters-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 12px;
 }
 
 label {
     display: grid;
     gap: 6px;
-    color: #4b5563;
-    font-size: 0.85rem;
-    font-weight: 600;
+    color: #50606a;
+    font-size: .8rem;
+    font-weight: 700;
 }
 
 select {
     width: 100%;
     min-height: 42px;
-    padding: 0 10px;
-    border: 1px solid #d1d5db;
+    padding: 0 .75rem;
+    border: 1px solid #cbd5d8;
     border-radius: 10px;
     background: #fff;
-    color: #111827;
+    color: #17202b;
     font: inherit;
 }
 

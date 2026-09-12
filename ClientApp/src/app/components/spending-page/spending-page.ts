@@ -15,7 +15,7 @@ import { SpendingListComponent } from '../spending-list/spending-list';
     <section class="page-shell">
       <div class="page-header">
         <div>
-          <p class="eyebrow">Administration</p>
+          <p class="eyebrow">Daily life</p>
           <h2>Spendings</h2>
         </div>
 
@@ -25,13 +25,13 @@ import { SpendingListComponent } from '../spending-list/spending-list';
           data-testid="quick-add-button"
           (click)="openModal()"
         >
-          Quick Add +
+          + Add spending
         </button>
       </div>
 
       <app-filter-controls [years]="years()" (filtersChanged)="filters.set($event)"></app-filter-controls>
       <div class="filtered-total" data-testid="filtered-total">
-        <span>Total for current filters</span>
+        <span>Total spent for current filters</span>
         <strong>{{ formatCurrency(filteredTotal()) }}</strong>
       </div>
       <app-spending-list [spendings]="filteredSpendings()" (editRequested)="openEditModal($event)" (deleteRequested)="deleteSpending($event)"></app-spending-list>
@@ -50,7 +50,7 @@ import { SpendingListComponent } from '../spending-list/spending-list';
       }
 
       .page-shell {
-        max-width: 900px;
+        max-width: 960px;
         margin: 0 auto;
         padding: 0 20px 40px;
       }
@@ -60,15 +60,15 @@ import { SpendingListComponent } from '../spending-list/spending-list';
         align-items: center;
         justify-content: space-between;
         gap: 16px;
-        margin-bottom: 24px;
+        margin-bottom: 28px;
       }
 
       .eyebrow {
         margin: 0 0 6px;
-        font-size: 0.75rem;
+        color: #6b7280;
+        font-size: .75rem;
         letter-spacing: 0.08em;
         text-transform: uppercase;
-        color: #6b7280;
       }
 
       h2 {
@@ -78,17 +78,17 @@ import { SpendingListComponent } from '../spending-list/spending-list';
 
       .quick-add-button {
         border: none;
-        border-radius: 12px;
-        background: #111827;
+        border-radius: 10px;
+        background: #17202b;
         color: #fff;
-        padding: 0.8rem 1.2rem;
+        padding: .8rem 1rem;
         font-weight: 700;
         cursor: pointer;
-        transition: transform 0.15s ease;
+        box-shadow: 0 8px 18px #17202b29;
       }
 
       .quick-add-button:hover {
-        transform: translateY(-1px);
+        background: #263442;
       }
 
       .filtered-total {
@@ -96,23 +96,37 @@ import { SpendingListComponent } from '../spending-list/spending-list';
         align-items: center;
         justify-content: space-between;
         gap: 16px;
-        margin-bottom: 20px;
-        padding: 16px 18px;
-        border-radius: 16px;
-        background: #111827;
+        margin: 26px 0 30px;
+        padding: 28px;
+        border-radius: 20px;
+        background: linear-gradient(120deg, #173b3f, #23605d);
         color: #fff;
+        box-shadow: 0 16px 30px #173b3f33;
       }
 
       .filtered-total span {
-        font-size: 0.85rem;
-        opacity: 0.8;
+        display: block;
+        margin-bottom: 8px;
+        color: #b8d6d1;
+        font-size: .85rem;
       }
 
       .filtered-total strong {
-        font-size: 1.35rem;
+        font-size: clamp(2.2rem, 8vw, 3.5rem);
+        letter-spacing: -.05em;
       }
 
       @media (max-width: 640px) {
+        .page-header {
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .quick-add-button {
+          width: 100%;
+        }
+
         .filtered-total {
           align-items: flex-start;
           flex-direction: column;

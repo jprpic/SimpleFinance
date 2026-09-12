@@ -1,15 +1,15 @@
 .content-panel {
     background: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: 18px;
-    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
+    border: 1px solid #e1e8ea;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px #17202b0a;
     padding: 18px;
 }
 
 .empty-state {
     padding: 40px 18px;
     text-align: center;
-    color: #6b7280;
+    color: #7a8791;
     font-size: 1rem;
 }
 
@@ -19,7 +19,7 @@
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 0;
 }
 
 .spending-item {
@@ -27,66 +27,74 @@
     justify-content: space-between;
     align-items: center;
     gap: 16px;
-    padding: 18px 16px;
-    border: 1px solid #edf2f7;
-    border-radius: 14px;
-    background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
+    padding: 12px 17px;
+    border-bottom: 1px solid #edf1f2;
+    background: #fff;
+}
+
+.spending-item:last-child {
+    border-bottom: 0;
 }
 
 .amount-line {
     display: flex;
     align-items: baseline;
     gap: 8px;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
+}
+
+.spending-main {
+    min-width: 0;
 }
 
 .amount-line strong {
-    font-size: 1.6rem;
-    letter-spacing: -0.04em;
+    color: #17202b;
+    font-size: 1.25rem;
+    letter-spacing: -.03em;
 }
 
 .amount-line span,
 .meta-line,
 .date {
-    color: #4b5563;
+    color: #7a8791;
 }
 
 .meta-line {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: wrap;
+    font-size: .78rem;
 }
 
 .spending-side {
     display: flex;
-    flex-direction: column;
     align-items: flex-end;
-    gap: 10px;
 }
 
 .item-actions {
     display: flex;
-    gap: 8px;
+    gap: 6px;
 }
 
 .edit-button,
 .delete-button {
-    padding: 0.55rem 0.8rem;
-    font-weight: 600;
+    padding: .45rem .6rem;
+    font-size: .75rem;
+    font-weight: 700;
     border: none;
-    border-radius: 12px;
+    border-radius: 8px;
     cursor: pointer;
 }
 
 .edit-button {
-    background: #e0f2fe;
-    color: #0369a1;
+    background: #e8eef2;
+    color: #344054;
 }
 
 .delete-button {
-    background: #fee2e2;
-    color: #b91c1c;
+    background: #f5e9e5;
+    color: #9f3d25;
 }
 
 .pagination {
@@ -94,7 +102,7 @@
     align-items: center;
     justify-content: center;
     gap: 12px;
-    margin-top: 20px;
+    margin-top: 16px;
 }
 
 .page-numbers {
@@ -106,18 +114,18 @@
     min-width: 42px;
     min-height: 38px;
     padding: 0.5rem 0.7rem;
-    border: 1px solid #d1d5db;
+    border: 1px solid #cbd5d8;
     border-radius: 10px;
     background: #fff;
-    color: #374151;
+    color: #344054;
     font-weight: 600;
     cursor: pointer;
 }
 
 .page-button:hover:not(:disabled),
 .page-button.active {
-    border-color: #111827;
-    background: #111827;
+    border-color: #173b3f;
+    background: #173b3f;
     color: #fff;
 }
 
@@ -134,17 +142,5 @@
     .page-button:not(.page-number) {
         padding-inline: 0.5rem;
         font-size: 0.8rem;
-    }
-}
-
-@media (max-width: 640px) {
-    .spending-item {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .spending-side {
-        width: 100%;
-        align-items: flex-start;
     }
 }
