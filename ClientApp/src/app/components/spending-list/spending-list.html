@@ -19,9 +19,10 @@
 
             <div class="spending-side">
                 <span class="date">{{ formatDate(spending.createdAt) }}</span>
-                <button type="button" class="delete-button" (click)="onDelete(spending.id)">
-                    Delete
-                </button>
+                <div class="item-actions">
+                    <button type="button" class="edit-button" (click)="onEdit(spending)">Edit</button>
+                    <button type="button" class="delete-button" (click)="onDelete(spending.id)">Delete</button>
+                </div>
             </div>
         </li>
         }

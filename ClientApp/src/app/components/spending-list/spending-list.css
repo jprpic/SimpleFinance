@@ -65,14 +65,28 @@
     gap: 10px;
 }
 
+.item-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.edit-button,
 .delete-button {
-    background: #fee2e2;
-    color: #b91c1c;
     padding: 0.55rem 0.8rem;
     font-weight: 600;
     border: none;
     border-radius: 12px;
     cursor: pointer;
+}
+
+.edit-button {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+.delete-button {
+    background: #fee2e2;
+    color: #b91c1c;
 }
 
 @media (max-width: 640px) {

@@ -1,19 +1,19 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 
 import { Category, Spending } from '../../models/spending.model';
+import { StorageService } from '../../services/storage.service';
 import { QuickAddFormValue, QuickAddModalComponent } from '../quick-add-modal/quick-add-modal';
 import { SpendingListComponent } from '../spending-list/spending-list';
-import { StorageService } from '../../services/storage.service';
 
 @Component({
-    selector: 'app-spending-page',
-    standalone: true,
-    imports: [QuickAddModalComponent, SpendingListComponent],
-    template: `
+  selector: 'app-spending-page',
+  standalone: true,
+  imports: [QuickAddModalComponent, SpendingListComponent],
+  template: `
     <section class="page-shell">
       <div class="page-header">
         <div>
-          <p class="eyebrow">Overview</p>
+          <p class="eyebrow">Administration</p>
           <h2>Spendings</h2>
         </div>
 
@@ -27,16 +27,17 @@ import { StorageService } from '../../services/storage.service';
         </button>
       </div>
 
-      <app-spending-list [spendings]="spendings()" (deleteRequested)="deleteSpending($event)"></app-spending-list>
+      <app-spending-list [spendings]="spendings()" (editRequested)="openEditModal($event)" (deleteRequested)="deleteSpending($event)"></app-spending-list>
       <app-quick-add-modal
         [isOpen]="isModalOpen()"
+        [spendingToEdit]="spendingToEdit()"
         (closed)="closeModal()"
         (submitted)="handleQuickAddSubmit($event)"
       ></app-quick-add-modal>
     </section>
   `,
-    styles: [
-        `
+  styles: [
+    `
       :host {
         display: block;
       }
@@ -83,43 +84,54 @@ import { StorageService } from '../../services/storage.service';
         transform: translateY(-1px);
       }
     `,
-    ],
+  ],
 })
 export class SpendingPageComponent implements OnInit {
-    private readonly storage = inject(StorageService);
+  private readonly storage = inject(StorageService);
 
-    protected readonly spendings = signal<Spending[]>([]);
-    protected readonly isModalOpen = signal(false);
+  protected readonly spendings = signal<Spending[]>([]);
+  protected readonly isModalOpen = signal(false);
+  protected readonly spendingToEdit = signal<Spending | null>(null);
 
-    async ngOnInit(): Promise<void> {
-        await this.loadSpendings();
-    }
+  async ngOnInit(): Promise<void> {
+    await this.loadSpendings();
+  }
 
-    protected async loadSpendings(): Promise<void> {
-        this.spendings.set(await this.storage.getSpendings());
-    }
+  protected async loadSpendings(): Promise<void> {
+    this.spendings.set(await this.storage.getSpendings());
+  }
 
-    protected openModal(): void {
-        this.isModalOpen.set(true);
-    }
+  protected openModal(): void {
+    this.spendingToEdit.set(null);
+    this.isModalOpen.set(true);
+  }
 
-    protected closeModal(): void {
-        this.isModalOpen.set(false);
-    }
+  protected closeModal(): void {
+    this.isModalOpen.set(false);
+    this.spendingToEdit.set(null);
+  }
 
-    protected async handleQuickAddSubmit(formValue: QuickAddFormValue): Promise<void> {
-        const nextSpendings = await this.storage.addSpending({
-            amount: Number(formValue.amount),
-            category: formValue.category ?? Category.HOUSING,
-            subcategory: formValue.subcategory,
-        });
+  protected openEditModal(spending: Spending): void {
+    this.spendingToEdit.set(spending);
+    this.isModalOpen.set(true);
+  }
 
-        this.spendings.set(nextSpendings);
-        this.closeModal();
-    }
+  protected async handleQuickAddSubmit(formValue: QuickAddFormValue): Promise<void> {
+    const changes = {
+      amount: Number(formValue.amount),
+      category: formValue.category ?? Category.HOUSING,
+      subcategory: formValue.subcategory,
+    };
+    const nextSpendings = formValue.id
+      ? await this.storage.updateSpending(formValue.id, changes)
+      : await this.storage.addSpending(changes);
 
-    protected async deleteSpending(id: string): Promise<void> {
-        const nextSpendings = await this.storage.deleteSpending(id);
-        this.spendings.set(nextSpendings);
-    }
+    this.spendings.set(nextSpendings);
+    this.closeModal();
+  }
+
+  protected async deleteSpending(id: string): Promise<void> {
+    const nextSpendings = await this.storage.deleteSpending(id);
+    this.spendings.set(nextSpendings);
+  }
 }

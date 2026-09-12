@@ -1,0 +1,73 @@
+<section class="analytics-panel">
+  <div class="analytics-header">
+    <div class="segmented-control" role="tablist" aria-label="Analytics view mode">
+      <button
+        type="button"
+        class="segment"
+        [class.active]="viewMode() === 'MONTH'"
+        (click)="setViewMode('MONTH')"
+      >
+        Monthly
+      </button>
+      <button
+        type="button"
+        class="segment"
+        [class.active]="viewMode() === 'YEAR'"
+        (click)="setViewMode('YEAR')"
+      >
+        Yearly
+      </button>
+    </div>
+
+    <div class="date-navigator">
+      <button type="button" class="nav-button" (click)="changeYear(-1)" aria-label="Previous year">
+        ‹ Prev
+      </button>
+
+      <span class="year-label">{{ activeYear() }}</span>
+
+      <button
+        type="button"
+        class="nav-button"
+        [disabled]="!canGoNextYear()"
+        (click)="changeYear(1)"
+        aria-label="Next year"
+      >
+        Next ›
+      </button>
+    </div>
+  </div>
+
+  <div class="total-card">
+    <span class="label">Total spent</span>
+    <strong>{{ formatCurrency(totalSpent()) }}</strong>
+  </div>
+
+  <div class="chart-shell">
+    <canvas #chartCanvas></canvas>
+  </div>
+
+  <div class="summary-header">
+    <h3>Category breakdown</h3>
+  </div>
+
+  @if (breakdown().length === 0) {
+    <p class="empty-breakdown">No spending recorded for this period.</p>
+  } @else {
+    <ul class="breakdown-list">
+      @for (item of breakdown(); track item.category) {
+        <li class="breakdown-item">
+          <div class="category-meta">
+            <span class="category-dot" [style.background]="getCategoryColor(item.category)"></span>
+            <span class="category-name">{{ item.category }}</span>
+          </div>
+
+          <div class="category-values">
+            <span>{{ formatCurrency(item.total) }}</span>
+            <span class="percentage">{{ item.percentage.toFixed(0) }}%</span>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</section>

@@ -32,6 +32,16 @@ export class StorageService {
         return nextSpendings;
     }
 
+    async updateSpending(id: string, changes: Omit<Spending, 'id' | 'createdAt'>): Promise<Spending[]> {
+        const existingSpendings = await this.getSpendings();
+        const nextSpendings = existingSpendings
+            .map((spending) => spending.id === id ? { ...spending, ...changes } : spending)
+            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+        await set(SPENDINGS_KEY, nextSpendings, spendingStore);
+        return nextSpendings;
+    }
+
     async deleteSpending(id: string): Promise<Spending[]> {
         const existingSpendings = await this.getSpendings();
         const nextSpendings = existingSpendings.filter((spending) => spending.id !== id);

@@ -3,7 +3,7 @@
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="quick-add-title"
         (click)="$event.stopPropagation()">
         <div class="modal-header">
-            <h2 id="quick-add-title">Quick Add</h2>
+            <h2 id="quick-add-title">{{ dialogTitle }}</h2>
             <button type="button" class="close-button" (click)="close()" aria-label="Close quick add dialog">
                 ×
             </button>
@@ -35,7 +35,7 @@
 
             <div class="actions">
                 <button type="button" class="secondary-button" (click)="close()">Cancel</button>
-                <button type="submit" class="primary-button">Save</button>
+                <button type="submit" class="primary-button">{{ submitLabel }}</button>
             </div>
         </form>
     </div>

@@ -12,6 +12,7 @@ import { Spending } from '../../models/spending.model';
 })
 export class SpendingListComponent {
     @Input() spendings: Spending[] = [];
+    @Output() editRequested = new EventEmitter<Spending>();
     @Output() deleteRequested = new EventEmitter<string>();
 
     protected formatDate(value: string): string {
@@ -24,5 +25,9 @@ export class SpendingListComponent {
 
     protected onDelete(id: string): void {
         this.deleteRequested.emit(id);
+    }
+
+    protected onEdit(spending: Spending): void {
+        this.editRequested.emit(spending);
     }
 }

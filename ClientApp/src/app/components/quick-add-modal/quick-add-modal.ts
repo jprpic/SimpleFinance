@@ -1,9 +1,10 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
-import { Category, SUBCATEGORIES_MAP } from '../../models/spending.model';
+import { Category, Spending, SUBCATEGORIES_MAP } from '../../models/spending.model';
 
 export interface QuickAddFormValue {
+    id?: string;
     amount: number | null;
     category: Category | null;
     subcategory: string;
@@ -16,8 +17,9 @@ export interface QuickAddFormValue {
     templateUrl: './quick-add-modal.html',
     styleUrl: './quick-add-modal.css',
 })
-export class QuickAddModalComponent {
+export class QuickAddModalComponent implements OnChanges {
     @Input() isOpen = false;
+    @Input() spendingToEdit: Spending | null = null;
     @Output() closed = new EventEmitter<void>();
     @Output() submitted = new EventEmitter<QuickAddFormValue>();
 
@@ -45,9 +47,9 @@ export class QuickAddModalComponent {
         return SUBCATEGORIES_MAP[category];
     }
 
-    ngOnChanges(): void {
-        if (this.isOpen) {
-            this.resetForm();
+    ngOnChanges(changes: SimpleChanges): void {
+        if (this.isOpen && (changes['isOpen'] || changes['spendingToEdit'])) {
+            this.resetForm(this.spendingToEdit);
         }
     }
 
@@ -69,15 +71,26 @@ export class QuickAddModalComponent {
             return;
         }
 
-        this.submitted.emit(this.form.getRawValue() as QuickAddFormValue);
+        this.submitted.emit({
+            ...this.form.getRawValue(),
+            id: this.spendingToEdit?.id,
+        } as QuickAddFormValue);
     }
 
-    protected resetForm(): void {
+    protected resetForm(spending: Spending | null = null): void {
         const category = Category.HOUSING;
         this.form.reset({
-            amount: null,
-            category,
-            subcategory: SUBCATEGORIES_MAP[category][0],
+            amount: spending?.amount ?? null,
+            category: spending?.category ?? category,
+            subcategory: spending?.subcategory ?? SUBCATEGORIES_MAP[category][0],
         });
+    }
+
+    protected get dialogTitle(): string {
+        return this.spendingToEdit ? 'Edit Spending' : 'Quick Add';
+    }
+
+    protected get submitLabel(): string {
+        return this.spendingToEdit ? 'Update' : 'Save';
     }
 }

@@ -14,25 +14,19 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should render the spending tracker header and empty state', async () => {
+  it('should render the global app shell header', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
 
-    expect(compiled.querySelector('h1')?.textContent).toContain('Spendings');
-    expect(compiled.textContent).toContain('No spendings recorded yet.');
+    expect(compiled.querySelector('h1')?.textContent).toContain('SimpleFinance');
   });
 
-  it('should open the quick add modal from the action button', async () => {
+  it('should mount the router outlet host', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
 
-    const button = compiled.querySelector('[data-testid="quick-add-button"]') as HTMLButtonElement;
-    button.click();
-    fixture.detectChanges();
-
-    expect(compiled.textContent).toContain('Quick Add');
-    expect(compiled.querySelector('form')).not.toBeNull();
+    expect(compiled.querySelector('router-outlet')).not.toBeNull();
   });
 });
