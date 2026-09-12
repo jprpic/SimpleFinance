@@ -14,14 +14,22 @@
         <div class="allocation-total" [class.invalid]="allocationTotal() !== 100"><span>Total
                 allocation</span><strong>{{ allocationTotal() }}%</strong></div>
         } @else {
-        @if (mode === 'transfer') {<label>From<select [(ngModel)]="fromCategoryIdValue">
+        @if (mode === 'transfer' || (mode === 'edit' && transactionToEdit?.type === 'TRANSFER')) {<label>From<select
+                [(ngModel)]="fromCategoryIdValue">
                 <option value="" disabled>Select envelope</option>@for (category of categories; track category.id) {
                 <option [value]="category.id">{{ category.name }}</option>}
             </select></label><label>To<select [(ngModel)]="toCategoryIdValue">
                 <option value="" disabled>Select envelope</option>@for (category of categories; track category.id) {
                 <option [value]="category.id">{{ category.name }}</option>}
             </select></label>}
-        @if (selectedCategory) {<div class="selected-envelope">{{ selectedCategory.name }} · {{
+        @if (mode === 'edit' && (transactionToEdit?.type === 'TOP_UP' || transactionToEdit?.type === 'WITHDRAWAL')) {
+        <label>Envelope<select
+                [ngModel]="transactionToEdit?.type === 'TOP_UP' ? toCategoryIdValue : fromCategoryIdValue"
+                (ngModelChange)="transactionToEdit?.type === 'TOP_UP' ? toCategoryIdValue = $event : fromCategoryIdValue = $event">
+                <option value="" disabled>Select envelope</option>@for (category of categories; track category.id) {
+                <option [value]="category.id">{{ category.name }}</option>}
+            </select></label>
+        } @else if (selectedCategory) {<div class="selected-envelope">{{ selectedCategory.name }} · {{
             formatCurrency(selectedCategory.balance) }} available</div>}
         <label>Amount<input type="number" min="0.01" step="0.01" [(ngModel)]="amountValue"
                 placeholder="0.00" /></label><label>Note <span class="optional">(optional)</span><input type="text"

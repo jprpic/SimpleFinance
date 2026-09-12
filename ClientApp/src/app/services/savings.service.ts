@@ -1,7 +1,7 @@
 import { Injectable, computed, signal } from '@angular/core';
 import { createStore, get, set } from 'idb-keyval';
 
-import { SAVINGS_CATEGORY_DEFINITIONS, SavingsAllocation, SavingsCategory, SavingsTransaction } from '../models/savings.model';
+import { SAVINGS_CATEGORY_DEFINITIONS, SavingsAllocation, SavingsCategory, SavingsCategoryId, SavingsTransaction } from '../models/savings.model';
 
 const CATEGORIES_KEY = 'pwa_savings_categories';
 const TRANSACTIONS_KEY = 'pwa_savings_transactions';
@@ -15,8 +15,9 @@ const createDefaultAllocation = (): SavingsAllocation => Object.fromEntries(
 
 @Injectable({ providedIn: 'root' })
 export class SavingsService {
-    readonly categories = signal<SavingsCategory[]>(createEmptyCategories());
     readonly transactions = signal<SavingsTransaction[]>([]);
+    private readonly allocation = signal<SavingsAllocation>(createDefaultAllocation());
+    readonly categories = computed(() => this.calculateCategories(this.transactions(), this.allocation()));
     readonly totalSaved = computed(() => this.categories().reduce((sum, category) => sum + category.balance, 0));
     private loadPromise: Promise<void> | null = null;
 
@@ -28,11 +29,11 @@ export class SavingsService {
                 get<Partial<SavingsAllocation>>(ALLOCATION_KEY, savingsStore),
             ]).then(async ([categories, transactions, allocation]) => {
                 const resolvedAllocation = this.resolveAllocation(allocation);
-                this.categories.set(this.mergeBalances(categories, resolvedAllocation));
+                this.allocation.set(resolvedAllocation);
                 this.transactions.set(transactions ?? []);
                 if (!categories?.length || !allocation) await this.persist(resolvedAllocation);
             }).catch(() => {
-                this.categories.set(createEmptyCategories());
+                this.allocation.set(createDefaultAllocation());
                 this.transactions.set([]);
             });
         }
@@ -42,30 +43,25 @@ export class SavingsService {
     async depositBulk(amount: number, note?: string): Promise<void> {
         await this.load();
         this.assertPositiveAmount(amount);
-        const categories = this.categories();
-        if (!categories.length) {
+        if (!this.categories().length) {
             throw new Error('Savings categories are not loaded.');
         }
 
-        const nextCategories = categories.map((category) => ({
-            ...category,
-            balance: category.balance + amount * category.targetPercentage / 100,
-        }));
         const transaction: SavingsTransaction = {
             id: crypto.randomUUID(), date: new Date().toISOString(), type: 'BULK_DEPOSIT', amount, note,
+            categoryAmounts: Object.fromEntries(this.categories().map((category) => [category.id, amount * category.targetPercentage / 100])),
         };
-        await this.commit(nextCategories, [transaction, ...this.transactions()]);
+        await this.commitTransactions([transaction, ...this.transactions()]);
     }
 
     async topUpCategory(categoryId: string, amount: number, note?: string): Promise<void> {
         await this.load();
         this.assertPositiveAmount(amount);
-        const category = this.findCategory(categoryId);
-        const nextCategories = this.categories().map((item) => item.id === category.id ? { ...item, balance: item.balance + amount } : item);
+        this.findCategory(categoryId);
         const transaction: SavingsTransaction = {
             id: crypto.randomUUID(), date: new Date().toISOString(), type: 'TOP_UP', amount, toCategoryId: categoryId, note,
         };
-        await this.commit(nextCategories, [transaction, ...this.transactions()]);
+        await this.commitTransactions([transaction, ...this.transactions()]);
     }
 
     async transferFunds(fromId: string, toId: string, amount: number, note?: string): Promise<void> {
@@ -79,15 +75,10 @@ export class SavingsService {
         if (source.balance < amount) {
             throw new Error(`Not enough funds in ${source.name}.`);
         }
-        const nextCategories = this.categories().map((category) => {
-            if (category.id === fromId) return { ...category, balance: category.balance - amount };
-            if (category.id === toId) return { ...category, balance: category.balance + amount };
-            return category;
-        });
         const transaction: SavingsTransaction = {
             id: crypto.randomUUID(), date: new Date().toISOString(), type: 'TRANSFER', amount, fromCategoryId: fromId, toCategoryId: toId, note,
         };
-        await this.commit(nextCategories, [transaction, ...this.transactions()]);
+        await this.commitTransactions([transaction, ...this.transactions()]);
     }
 
     async withdrawFunds(categoryId: string, amount: number, note?: string): Promise<void> {
@@ -97,33 +88,50 @@ export class SavingsService {
         if (category.balance < amount) {
             throw new Error(`Not enough funds in ${category.name}.`);
         }
-        const nextCategories = this.categories().map((item) => item.id === categoryId ? { ...item, balance: item.balance - amount } : item);
         const transaction: SavingsTransaction = {
             id: crypto.randomUUID(), date: new Date().toISOString(), type: 'WITHDRAWAL', amount, fromCategoryId: categoryId, note,
         };
-        await this.commit(nextCategories, [transaction, ...this.transactions()]);
+        await this.commitTransactions([transaction, ...this.transactions()]);
+    }
+
+    async updateTransaction(id: string, changes: Pick<SavingsTransaction, 'amount' | 'note' | 'fromCategoryId' | 'toCategoryId'>): Promise<void> {
+        await this.load();
+        this.assertPositiveAmount(changes.amount);
+        const existing = this.transactions().find((transaction) => transaction.id === id);
+        if (!existing) throw new Error('Savings transaction not found.');
+        if (existing.type === 'TRANSFER' && changes.fromCategoryId === changes.toCategoryId) {
+            throw new Error('Choose two different envelopes.');
+        }
+        const updated = this.transactions().map((transaction) => transaction.id === id ? { ...transaction, ...changes } : transaction);
+        this.assertValidProjection(updated);
+        await this.commitTransactions(updated);
+    }
+
+    async deleteTransaction(id: string): Promise<void> {
+        await this.load();
+        const nextTransactions = this.transactions().filter((transaction) => transaction.id !== id);
+        if (nextTransactions.length === this.transactions().length) throw new Error('Savings transaction not found.');
+        this.assertValidProjection(nextTransactions);
+        await this.commitTransactions(nextTransactions);
     }
 
     async updateAllocation(allocation: SavingsAllocation): Promise<void> {
         await this.load();
         this.assertValidAllocation(allocation);
-        const nextCategories = this.categories().map((category) => ({
-            ...category,
-            targetPercentage: allocation[category.id],
-        }));
+        this.allocation.set(allocation);
         await Promise.all([
-            set(CATEGORIES_KEY, nextCategories, savingsStore),
+            set(CATEGORIES_KEY, this.categories(), savingsStore),
             set(ALLOCATION_KEY, allocation, savingsStore),
         ]);
-        this.categories.set(nextCategories);
     }
 
-    private async commit(categories: SavingsCategory[], transactions: SavingsTransaction[]): Promise<void> {
+    private async commitTransactions(transactions: SavingsTransaction[]): Promise<void> {
+        this.assertValidProjection(transactions);
+        const nextCategories = this.calculateCategories(transactions, this.allocation());
         await Promise.all([
-            set(CATEGORIES_KEY, categories, savingsStore),
+            set(CATEGORIES_KEY, nextCategories, savingsStore),
             set(TRANSACTIONS_KEY, transactions, savingsStore),
         ]);
-        this.categories.set(categories);
         this.transactions.set(transactions);
     }
 
@@ -133,12 +141,29 @@ export class SavingsService {
         await set(ALLOCATION_KEY, allocation, savingsStore);
     }
 
-    private mergeBalances(storedCategories: SavingsCategory[] | undefined, allocation: SavingsAllocation): SavingsCategory[] {
+    private calculateCategories(transactions: SavingsTransaction[], allocation: SavingsAllocation): SavingsCategory[] {
         return SAVINGS_CATEGORY_DEFINITIONS.map((definition) => ({
             ...definition,
             targetPercentage: allocation[definition.id],
-            balance: storedCategories?.find((category) => category.id === definition.id)?.balance ?? 0,
+            balance: transactions.reduce((total, transaction) => total + this.transactionAmountForCategory(transaction, definition.id, allocation), 0),
         }));
+    }
+
+    private transactionAmountForCategory(transaction: SavingsTransaction, categoryId: SavingsCategoryId, allocation: SavingsAllocation): number {
+        if (transaction.type === 'BULK_DEPOSIT') {
+            return transaction.categoryAmounts?.[categoryId] ?? transaction.amount * allocation[categoryId] / 100;
+        }
+        if (transaction.type === 'WITHDRAWAL') return transaction.fromCategoryId === categoryId ? -transaction.amount : 0;
+        if (transaction.type === 'TOP_UP') return transaction.toCategoryId === categoryId ? transaction.amount : 0;
+        if (transaction.fromCategoryId === categoryId) return -transaction.amount;
+        if (transaction.toCategoryId === categoryId) return transaction.amount;
+        return 0;
+    }
+
+    private assertValidProjection(transactions: SavingsTransaction[]): void {
+        if (this.calculateCategories(transactions, this.allocation()).some((category) => category.balance < -0.001)) {
+            throw new Error('This change would make an envelope balance negative.');
+        }
     }
 
     private resolveAllocation(stored: Partial<SavingsAllocation> | undefined): SavingsAllocation {

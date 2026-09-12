@@ -3,13 +3,33 @@
         <h3>Recent activity</h3><span>{{ transactions.length }} transactions</span>
     </div>
     @if (transactions.length === 0) { <div class="empty-state">Your savings activity will appear here.</div> } @else {
-    <div class="history-list">@for (transaction of transactions.slice(0, 12); track transaction.id) {<div
-            class="history-item"><span class="history-icon" [class.negative]="transaction.type === 'WITHDRAWAL'">{{
+    <div class="history-list">@for (transaction of pagedTransactions; track transaction.id) {<div class="history-item">
+            <span class="history-icon" [class.negative]="transaction.type === 'WITHDRAWAL'">{{
                 transaction.type === 'WITHDRAWAL' ? '-' : '+' }}</span>
             <div class="history-main"><strong>{{ transactionLabel(transaction) }}</strong><span>{{ transaction.note ||
                     transactionTypeLabel(transaction.type) }}</span></div>
             <div class="history-amount"><strong [class.negative-text]="transaction.type === 'WITHDRAWAL'">{{
                     transaction.type === 'WITHDRAWAL' ? '-' : '+' }}{{ formatCurrency(transaction.amount)
                     }}</strong><span>{{ formatDate(transaction.date) }}</span></div>
-        </div>}</div> }
+            <div class="history-actions">
+                <button type="button" (click)="editRequested.emit(transaction)">Edit</button>
+                <button type="button" class="delete-button"
+                    (click)="deleteRequested.emit(transaction.id)">Delete</button>
+            </div>
+        </div>}</div>
+    @if (totalPages > 1) {
+    <nav class="pagination" aria-label="Savings transaction pages">
+        <button type="button" class="page-button" [disabled]="currentPage === 1"
+            (click)="goToPreviousPage()">Previous</button>
+        <div class="page-numbers">
+            @for (page of pageNumbers; track page) {
+            <button type="button" class="page-button page-number" [class.active]="page === currentPage"
+                [attr.aria-current]="page === currentPage ? 'page' : null" (click)="goToPage(page)">{{ page }}</button>
+            }
+        </div>
+        <button type="button" class="page-button" [disabled]="currentPage === totalPages"
+            (click)="goToNextPage()">Next</button>
+    </nav>
+    }
+    }
 </section>

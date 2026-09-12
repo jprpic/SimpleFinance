@@ -1,0 +1,38 @@
+<section class="filters-panel" aria-labelledby="savings-filters-title">
+    <div class="filters-heading">
+        <h3 id="savings-filters-title">Filter savings</h3>
+        <span>Year and month affect summaries</span>
+    </div>
+
+    <div class="filters-grid">
+        <label>
+            <span>Year</span>
+            <select #year (change)="updateFilters(year.value, month.value, category.value)">
+                <option value="">Any year</option>
+                @for (filterYear of years; track filterYear) {
+                <option [value]="filterYear">{{ filterYear }}</option>
+                }
+            </select>
+        </label>
+
+        <label>
+            <span>Month</span>
+            <select #month (change)="updateFilters(year.value, month.value, category.value)">
+                <option value="">Any month</option>
+                @for (filterMonth of months; track $index) {
+                <option [value]="$index">{{ filterMonth }}</option>
+                }
+            </select>
+        </label>
+
+        <label>
+            <span>Category</span>
+            <select #category (change)="updateFilters(year.value, month.value, category.value)">
+                <option value="">Any category</option>
+                @for (filterCategory of categories; track filterCategory.id) {
+                <option [value]="filterCategory.id">{{ filterCategory.name }}</option>
+                }
+            </select>
+        </label>
+    </div>
+</section>

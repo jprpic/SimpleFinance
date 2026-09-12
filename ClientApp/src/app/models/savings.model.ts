@@ -41,4 +41,5 @@ export interface SavingsTransaction {
     fromCategoryId?: string;
     toCategoryId?: string;
     note?: string;
+    categoryAmounts?: Partial<Record<SavingsCategoryId, number>>;
 }

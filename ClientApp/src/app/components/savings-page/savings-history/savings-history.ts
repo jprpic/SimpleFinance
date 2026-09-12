@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 
 import { SavingsCategory, SavingsTransaction } from '../../../models/savings.model';
 
@@ -8,9 +8,30 @@ import { SavingsCategory, SavingsTransaction } from '../../../models/savings.mod
     templateUrl: './savings-history.html',
     styleUrl: './savings-history.css',
 })
-export class SavingsHistoryComponent {
+export class SavingsHistoryComponent implements OnChanges {
     @Input() transactions: SavingsTransaction[] = [];
     @Input() categories: SavingsCategory[] = [];
+    @Output() editRequested = new EventEmitter<SavingsTransaction>();
+    @Output() deleteRequested = new EventEmitter<string>();
+    protected readonly pageSize = 10;
+    protected currentPage = 1;
+
+    protected get totalPages(): number { return Math.ceil(this.transactions.length / this.pageSize); }
+    protected get pagedTransactions(): SavingsTransaction[] {
+        const startIndex = (this.currentPage - 1) * this.pageSize;
+        return this.transactions.slice(startIndex, startIndex + this.pageSize);
+    }
+    protected get pageNumbers(): number[] { return Array.from({ length: this.totalPages }, (_, index) => index + 1); }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['transactions']) this.currentPage = 1;
+    }
+
+    protected goToPage(page: number): void {
+        if (page >= 1 && page <= this.totalPages) this.currentPage = page;
+    }
+    protected goToPreviousPage(): void { this.goToPage(this.currentPage - 1); }
+    protected goToNextPage(): void { this.goToPage(this.currentPage + 1); }
 
     protected transactionLabel(transaction: SavingsTransaction): string {
         const from = this.categories.find((category) => category.id === transaction.fromCategoryId)?.name;
