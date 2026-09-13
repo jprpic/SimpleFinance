@@ -3,6 +3,7 @@ export interface Spending {
     amount: number;
     category: Category;
     subcategory: string;
+    date: string;
     createdAt: string;
 }
 

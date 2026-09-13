@@ -58,6 +58,15 @@
     background: #fff;
 }
 
+.secondary-row {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.date-field {
+    width: min(100%, 190px);
+}
+
 .actions {
     display: flex;
     justify-content: flex-end;

@@ -33,6 +33,13 @@
                 </select>
             </label>
 
+            <div class="secondary-row">
+                <label class="date-field">
+                    <span>Date</span>
+                    <input type="date" formControlName="date" class="border border-gray-300 rounded-lg px-3 py-2" />
+                </label>
+            </div>
+
             <div class="actions">
                 <button type="button" class="secondary-button" (click)="close()">Cancel</button>
                 <button type="submit" class="primary-button">{{ submitLabel }}</button>

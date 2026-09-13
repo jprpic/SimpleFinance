@@ -8,6 +8,7 @@ export interface QuickAddFormValue {
     amount: number | null;
     category: Category | null;
     subcategory: string;
+    date: string;
 }
 
 @Component({
@@ -35,6 +36,10 @@ export class QuickAddModalComponent implements OnChanges {
             validators: [Validators.required],
         }),
         subcategory: new FormControl('', {
+            nonNullable: true,
+            validators: [Validators.required],
+        }),
+        date: new FormControl('', {
             nonNullable: true,
             validators: [Validators.required],
         }),
@@ -83,7 +88,16 @@ export class QuickAddModalComponent implements OnChanges {
             amount: spending?.amount ?? null,
             category: spending?.category ?? category,
             subcategory: spending?.subcategory ?? SUBCATEGORIES_MAP[category][0],
+            date: spending?.date ?? this.todayIsoDate(),
         });
+    }
+
+    private todayIsoDate(): string {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     }
 
     protected get dialogTitle(): string {

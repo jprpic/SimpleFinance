@@ -143,7 +143,7 @@ export class SpendingPageComponent implements OnInit {
   protected readonly filters = signal<SpendingFilters>({ year: null, month: null, category: null, subcategory: null });
   protected readonly isModalOpen = signal(false);
   protected readonly spendingToEdit = signal<Spending | null>(null);
-  protected readonly years = computed(() => [...new Set(this.spendings().map((spending) => new Date(spending.createdAt).getFullYear()))].sort((a, b) => b - a));
+  protected readonly years = computed(() => [...new Set(this.spendings().map((spending) => Number(spending.date.slice(0, 4))))].sort((a, b) => b - a));
   protected readonly filteredSpendings = computed(() => filterSpendings(this.spendings(), this.filters()));
   protected readonly filteredTotal = computed(() => this.filteredSpendings().reduce((total, spending) => total + spending.amount, 0));
 
@@ -175,6 +175,7 @@ export class SpendingPageComponent implements OnInit {
       amount: Number(formValue.amount),
       category: formValue.category ?? Category.HOUSING,
       subcategory: formValue.subcategory,
+      date: formValue.date,
     };
     const nextSpendings = formValue.id
       ? await this.storage.updateSpending(formValue.id, changes)

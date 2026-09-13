@@ -8,6 +8,7 @@ describe('spending-filters.utils', () => {
             amount: 120,
             category: Category.FOOD,
             subcategory: 'Groceries',
+            date: '2024-01-15',
             createdAt: '2024-01-15T10:00:00.000Z',
         },
         {
@@ -15,6 +16,7 @@ describe('spending-filters.utils', () => {
             amount: 200,
             category: Category.HOUSING,
             subcategory: 'Rent',
+            date: '2024-01-15',
             createdAt: '2024-01-15T10:00:00.000Z',
         },
         {
@@ -22,6 +24,7 @@ describe('spending-filters.utils', () => {
             amount: 50,
             category: Category.FOOD,
             subcategory: 'Restaurants & Dining Out',
+            date: '2025-03-05',
             createdAt: '2025-03-05T10:00:00.000Z',
         },
     ];

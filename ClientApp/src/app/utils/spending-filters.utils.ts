@@ -9,7 +9,7 @@ export interface SpendingFilters {
 
 export function filterSpendings(spendings: Spending[], filters: SpendingFilters): Spending[] {
     return spendings.filter((spending) => {
-        const date = new Date(spending.createdAt);
+        const date = new Date(`${spending.date}T00:00:00`);
 
         return (filters.year === null || date.getFullYear() === filters.year)
             && (filters.month === null || date.getMonth() === filters.month)

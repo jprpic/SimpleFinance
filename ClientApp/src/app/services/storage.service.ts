@@ -13,7 +13,16 @@ const spendingStore = createStore(DB_NAME, STORE_NAME);
 export class StorageService {
     async getSpendings(): Promise<Spending[]> {
         const spendings = await get<Spending[]>(SPENDINGS_KEY, spendingStore);
-        return spendings ?? [];
+        const normalizedSpendings = (spendings ?? []).map((spending) => ({
+            ...spending,
+            date: spending.date ?? spending.createdAt.slice(0, 10),
+        }));
+
+        if (normalizedSpendings.some((spending, index) => spending.date !== spendings?.[index]?.date)) {
+            await set(SPENDINGS_KEY, normalizedSpendings, spendingStore);
+        }
+
+        return this.sortByDate(normalizedSpendings);
     }
 
     async addSpending(item: Omit<Spending, 'id' | 'createdAt'>): Promise<Spending[]> {
@@ -25,7 +34,7 @@ export class StorageService {
         };
 
         const nextSpendings = [entry, ...existingSpendings].sort(
-            (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+            (a, b) => b.date.localeCompare(a.date),
         );
 
         await set(SPENDINGS_KEY, nextSpendings, spendingStore);
@@ -36,7 +45,7 @@ export class StorageService {
         const existingSpendings = await this.getSpendings();
         const nextSpendings = existingSpendings
             .map((spending) => spending.id === id ? { ...spending, ...changes } : spending)
-            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+            .sort((a, b) => b.date.localeCompare(a.date));
 
         await set(SPENDINGS_KEY, nextSpendings, spendingStore);
         return nextSpendings;
@@ -48,5 +57,9 @@ export class StorageService {
 
         await set(SPENDINGS_KEY, nextSpendings, spendingStore);
         return nextSpendings;
+    }
+
+    private sortByDate(spendings: Spending[]): Spending[] {
+        return [...spendings].sort((a, b) => b.date.localeCompare(a.date));
     }
 }
