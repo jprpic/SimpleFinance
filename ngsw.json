@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1789289133624,
+  "timestamp": 1789309546765,
   "index": "https://jprpic.github.io/SimpleFinance/index.html",
   "assetGroups": [
     {
@@ -41,15 +41,15 @@
   ],
   "dataGroups": [],
   "hashTable": {
-    "https://jprpic.github.io/SimpleFinance/favicon.ico": "9c39f434fe1261f68c5e3eefdf734630d99c5670",
-    "https://jprpic.github.io/SimpleFinance/icons/icon-128x128.png": "f912963bdc6d5a38d8f1dd0afbaab2ce8d657acb",
-    "https://jprpic.github.io/SimpleFinance/icons/icon-144x144.png": "b155fd5f2fd5d2ea7760721063003c4cd95fd783",
-    "https://jprpic.github.io/SimpleFinance/icons/icon-152x152.png": "eae6e0f0c8afb8aaae339e2a569b43e9238e5e6c",
-    "https://jprpic.github.io/SimpleFinance/icons/icon-192x192.png": "15c4180454633880d98674aa7394656196c91584",
-    "https://jprpic.github.io/SimpleFinance/icons/icon-384x384.png": "94a915751ef6c9282df9aea405ad679230631814",
-    "https://jprpic.github.io/SimpleFinance/icons/icon-512x512.png": "1de182f76f7329dfa8f9fcdd1fdcdd695bea6a99",
-    "https://jprpic.github.io/SimpleFinance/icons/icon-72x72.png": "aa88a6096bd973be7f6d7a5489bfa6bc2463f8c4",
-    "https://jprpic.github.io/SimpleFinance/icons/icon-96x96.png": "7fb8f59c30ce2ff12c700321a0b39e14b3dc8f95",
+    "https://jprpic.github.io/SimpleFinance/favicon.ico": "7763b34c2bbf0ba7ecb3a39bd55904c192d6dd80",
+    "https://jprpic.github.io/SimpleFinance/icons/icon-128x128.png": "4190bada18766cb513ef1ac00029832b71e0f060",
+    "https://jprpic.github.io/SimpleFinance/icons/icon-144x144.png": "db5b3f693a1533720eb83d9cd02428b0fefabceb",
+    "https://jprpic.github.io/SimpleFinance/icons/icon-152x152.png": "9d937245f19353963afda43fc969c9365ec0da24",
+    "https://jprpic.github.io/SimpleFinance/icons/icon-192x192.png": "9676472f5a68b9b2d3d45155c218f1b3bd195d9e",
+    "https://jprpic.github.io/SimpleFinance/icons/icon-384x384.png": "ab0eb0a047ced29681cf06b15e3cec1b6a1542e6",
+    "https://jprpic.github.io/SimpleFinance/icons/icon-512x512.png": "4f6fae3eda6b0cc491fb71cc2e7a5ea0f6c8035c",
+    "https://jprpic.github.io/SimpleFinance/icons/icon-72x72.png": "684a32b4087451a6ffa400550cf20d2bd4fc8986",
+    "https://jprpic.github.io/SimpleFinance/icons/icon-96x96.png": "1161324950d048a7fea1ad1aaef6ac27136bd275",
     "https://jprpic.github.io/SimpleFinance/index.html": "684b2207e963fefb163c16bb296978803ecbb417",
     "https://jprpic.github.io/SimpleFinance/main-DFNRSMBY.js": "07697489aa2d550975e836df6cf0d5efb356ad37",
     "https://jprpic.github.io/SimpleFinance/manifest.webmanifest": "606fde057d664eaf15c676f03bc800b81ed68098",
